@@ -62,15 +62,10 @@
             display: block;
             text-decoration: none;
             color: inherit;
-            transition: background 0.2s;
         }
 
         .info-box:first-child { border-radius: 12px 12px 4px 4px; }
-        .info-box:nth-last-child(1) { border-radius: 4px 4px 12px 12px; margin-bottom: 30px; }
-
-        .info-box:hover {
-            background-color: #2a2d31;
-        }
+        .info-box:nth-last-child(2) { border-radius: 4px 4px 12px 12px; margin-bottom: 30px; }
 
         .val {
             display: block;
@@ -84,25 +79,23 @@
             color: #9aa0a6;
         }
 
+        /* Специален линк, изглеждащ като бутон */
         .save-btn {
             background-color: #b9d1ff;
             color: #041e49;
-            border: none;
+            text-decoration: none;
             padding: 14px;
-            width: 100%;
+            width: calc(100% - 28px);
             border-radius: 30px;
             font-size: 16px;
             font-weight: 600;
-            cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 10px;
-            transition: opacity 0.2s;
-        }
-
-        .save-btn:hover {
-            opacity: 0.9;
+            margin: 0 auto;
+            border: none;
+            cursor: pointer;
         }
 
         .footer-info {
@@ -119,7 +112,7 @@
 <body>
 
 <div class="container">
-    <div class="close-btn" onclick="window.close()">✕</div>
+    <div class="close-btn">✕</div>
     
     <div class="avatar">N</div>
     <div class="profile-name">Nikolay Tonchev</div>
@@ -140,7 +133,7 @@
             <span class="label">Email · Other</span>
         </a>
 
-        <a href="https://www.google.com/maps/search/?api=1&query=Kardzhali,+ul.+Bulair+27" target="_blank" class="info-box">
+        <a href="https://maps.google.com/?q=ul.+Bulair+27,+Kardzhali" target="_blank" class="info-box">
             <span class="val">Kardzhali, ul. Bulair 27</span>
             <span class="label">Address · Home</span>
         </a>
@@ -162,43 +155,36 @@
         <span>^</span>
     </div>
 
-    <button class="save-btn" id="downloadVCard">
+    <a id="vcardLink" class="save-btn">
         <span style="font-size: 20px;">👤+</span> Save contact
-    </button>
+    </a>
 </div>
 
 <script>
-    document.getElementById('downloadVCard').addEventListener('click', function() {
-        // Дефиниране на информацията за vCard (VCF формат)
-        const vcardData = [
-            "BEGIN:VCARD",
-            "VERSION:3.0",
-            "FN:Nikolay Tonchev",
-            "ORG:Global Net LTD.",
-            "TEL;TYPE=CELL,VOICE:+359878294244",
-            "EMAIL;TYPE=PREF,INTERNET:koul85@abv.bg",
-            "ADR;TYPE=HOME:;;ul. Bulair 27;Kardzhali;;;Bulgaria",
-            "URL:http://globalnet.bg",
-            "END:VCARD"
-        ].join("\n");
+    // Подготовка на данните във формат vCard
+    const name = "Nikolay Tonchev";
+    const phone = "+359878294244";
+    const email = "koul85@abv.bg";
+    const org = "Global Net LTD.";
+    const adr = "ul. Bulair 27, Kardzhali, Bulgaria";
+    const url = "http://globalnet.bg";
 
-        // Създаване на файл (Blob)
-        const blob = new Blob([vcardData], { type: "text/vcard" });
-        const url = window.URL.createObjectURL(blob);
-        
-        // Създаване на временен линк за изтегляне
-        const link = document.createElement("a");
-        link.href = url;
-        link.setAttribute("download", "Nikolay_Tonchev.vcf");
-        document.body.appendChild(link);
-        
-        // Кликване върху линка
-        link.click();
-        
-        // Почистване
-        document.body.removeChild(link);
-        window.URL.revokeObjectURL(url);
-    });
+    const vcard = `BEGIN:VCARD
+VERSION:3.0
+FN:${name}
+ORG:${org}
+TEL;TYPE=CELL,VOICE:${phone}
+EMAIL;TYPE=PREF,INTERNET:${email}
+ADR;TYPE=HOME:;;${adr};;;;
+URL:${url}
+END:VCARD`;
+
+    // Кодиране на данните в Base64, за да се третират като директен линк, а не като файл
+    const base64Vcard = btoa(unescape(encodeURIComponent(vcard)));
+    const vcardUrl = 'data:text/vcard;base64,' + base64Vcard;
+
+    // Задаване на линка към бутона
+    document.getElementById('vcardLink').href = vcardUrl;
 </script>
 
 </body>
